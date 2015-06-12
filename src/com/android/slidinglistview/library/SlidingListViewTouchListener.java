@@ -10,9 +10,10 @@ import android.widget.AbsListView;
 public class SlidingListViewTouchListener implements OnTouchListener {
 	Context context;
 	int frontView, backView;
+	SlidingListView slidingListView;
 	
-	public SlidingListViewTouchListener(Context context, int frontView, int backView) {
-		this.context = context;
+	public SlidingListViewTouchListener(SlidingListView slidingListView, int frontView, int backView) {
+		this.slidingListView = slidingListView;
 		this.frontView = frontView;
 		this.backView = backView;
 	}
@@ -29,7 +30,6 @@ public class SlidingListViewTouchListener implements OnTouchListener {
 			@Override
 			public void onScrollStateChanged(AbsListView view, int scrollState) {
 				// TODO Auto-generated method stub
-				
 			}
 			
 			@Override
@@ -41,4 +41,3 @@ public class SlidingListViewTouchListener implements OnTouchListener {
 		};
 	}
 }
-

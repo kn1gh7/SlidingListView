@@ -3,7 +3,7 @@ package com.android.slidinglistview.sample;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.android.slidinglistviewlibrarynsample.R;
+import com.android.slidinglistview.library.SlidingListView;
 
 import android.support.v7.app.ActionBarActivity;
 import android.content.Context;
@@ -12,20 +12,19 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 public class MainActivity extends ActionBarActivity {
 
-	ListView listview;
+	SlidingListView listview;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		
-		listview = (ListView) findViewById(R.id.listView);
+		listview = (SlidingListView) findViewById(R.id.listView);
 		ArrayList<DataModel> data = new ArrayList<MainActivity.DataModel>();
 		MyAdapter adapter = new MyAdapter(this, data);
 		listview.setAdapter(adapter);
@@ -57,11 +56,9 @@ public class MainActivity extends ActionBarActivity {
 		
 		@Override
 		public int getCount() {
-			// TODO Auto-generated method stub
 			return 10;
 		}
 	}
-	
 	
 	private class DataModel {
 		String count;
