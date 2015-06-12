@@ -9,6 +9,7 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewConfiguration;
 import android.widget.ListView;
+import android.widget.Toast;
 
 public class SlidingListView extends ListView {
 
@@ -39,5 +40,9 @@ public class SlidingListView extends ListView {
 	private void init(AttributeSet attrs) {
         openSlidingWhenLongPressed = true;
         closeAllItemsOnListScroll = true;
+	}
+	
+	private void showToast(String msg) {
+		Toast.makeText(getContext(), msg, Toast.LENGTH_SHORT).show();
 	}
 }
