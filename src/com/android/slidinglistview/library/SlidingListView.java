@@ -41,8 +41,4 @@ public class SlidingListView extends ListView {
         openSlidingWhenLongPressed = true;
         closeAllItemsOnListScroll = true;
 	}
-	
-	private void showToast(String msg) {
-		Toast.makeText(getContext(), msg, Toast.LENGTH_SHORT).show();
-	}
 }
