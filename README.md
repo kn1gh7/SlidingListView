@@ -1,2 +1,1 @@
-# SlidingListView
-Provides a listview with each items swipeable.
+Provide a listview with each item Slideable
