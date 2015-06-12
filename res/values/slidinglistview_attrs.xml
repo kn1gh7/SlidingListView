@@ -1,0 +1,16 @@
+<resources >
+    <declare-styleable name="SlidingListView" >
+        <attr name="openSlidingOnLongPress" format="boolean"/>
+        <attr name="openOnSlideRight" format="boolean" />
+        <attr name="openOnSlideLeft" format="boolean" />
+        <attr name="frontView" format="reference" />
+        <attr name="backView" format="reference" />
+        <attr name="multipleViewsOpen" format="boolean" />
+        <attr name="slideMode" format="enum" >
+            <enum name="none" value="0" />
+            <enum name="both" value="1" />
+            <enum name="right" value="2" />
+            <enum name="left" value="3" />
+        </attr>
+    </declare-styleable>
+</resources>
