@@ -188,6 +188,7 @@ public class SlidingListViewTouchListener implements OnTouchListener {
 		for (int i=0; i<slidingListView.getAdapter().getCount(); i++) {
 			if (opened.get(i)) {
 				slideClose(slidingListView.getChildAt(i));
+				opened.set(i, false);
 			}
 		}
 	}
