@@ -39,6 +39,7 @@ public class SlidingListViewTouchListener implements OnTouchListener {
 	@Override
 	public boolean onTouch(View v, MotionEvent event) {
 		// TODO Auto-generated method stub
+		showLog("onTouch SlidingView" + (v.getId() == slidingListView.getId()) + " " + v.getId());
 		switch (event.getActionMasked()) {
 		case MotionEvent.ACTION_MOVE:
 			float currentX = event.getRawX();
@@ -76,9 +77,23 @@ public class SlidingListViewTouchListener implements OnTouchListener {
 		return false;
 	}
 	
+	public void resetItems() {
+		if (slidingListView != null && slidingListView.getAdapter() != null) {
+			int count = slidingListView.getAdapter().getCount();
+			opened = new ArrayList<Boolean>();
+			showLog(count + "");
+			for (int i=0; i<count; i++) {
+				opened.add(false);
+			}
+		} else {
+			showLog("slidingListView == null: " + (slidingListView == null) + " adapter: " + (slidingListView.getAdapter() == null));
+		}
+	}
+	
 	private void openCurrent(View view, MotionEvent event) {
 		if (view.getId() == slidingListView.getId()) {
 			showLog("Is Sliding View");
+			closeAllOpenItems();
 			if (downX > 0) {
 				int childCount = slidingListView.getChildCount();
                 int[] listViewCoords = new int[2];
@@ -96,8 +111,9 @@ public class SlidingListViewTouchListener implements OnTouchListener {
                     // dont allow swiping if this is on the header or footer or IGNORE_ITEM_VIEW_TYPE or enabled is false on the adapter
                     boolean allowSwipe = slidingListView.getAdapter().isEnabled(childPosition) && slidingListView.getAdapter().getItemViewType(childPosition) >= 0;
 
-                    if (allowSwipe && rect.contains(x, y)) {
+                    if (allowSwipe && rect.contains(x, y) && !opened.get(childPosition)) {
                     	showLog("Slide Open");
+                    	opened.set(i, true);
                     	slideOpen(slidingListView.getChildAt(childPosition-slidingListView.getFirstVisiblePosition()));
                     } else {
                     	showLog("Slide Close");
@@ -115,7 +131,8 @@ public class SlidingListViewTouchListener implements OnTouchListener {
             int end = slidingListView.getLastVisiblePosition();
             for (int i = start; i <= end; i++) {
                 if (opened.get(i)) {
-                    /*closeAnimate(slidingListView.getChildAt(i - start).findViewById(frontView), i);*/
+                    slideClose(slidingListView.getChildAt(i));
+                    opened.set(i, false);
                 }
             }
         }
@@ -151,16 +168,27 @@ public class SlidingListViewTouchListener implements OnTouchListener {
                     // dont allow swiping if this is on the header or footer or IGNORE_ITEM_VIEW_TYPE or enabled is false on the adapter
                     boolean allowSwipe = slidingListView.getAdapter().isEnabled(childPosition) && slidingListView.getAdapter().getItemViewType(childPosition) >= 0;
 
-                    if (allowSwipe && rect.contains(x, y)) {
+                    if (allowSwipe && rect.contains(x, y) && opened.get(childPosition)) {
                     	showLog("Slide Open");
+                    	opened.set(i, false);
                     	slideClose(slidingListView.getChildAt(childPosition-slidingListView.getFirstVisiblePosition()));
                     } else {
                     	showLog("Slide Close");
                     }
                 }
+                downX = 0;
+                downEvent = null;
 			}
 		} else {
 			showLog("NO Sliding View");
+		}
+	}
+	
+	private void closeAllOpenItems() {
+		for (int i=0; i<slidingListView.getAdapter().getCount(); i++) {
+			if (opened.get(i)) {
+				slideClose(slidingListView.getChildAt(i));
+			}
 		}
 	}
 	

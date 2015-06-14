@@ -4,11 +4,14 @@ import com.android.slidinglistview.sample.R;
 
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.database.DataSetObserver;
 import android.support.v4.view.ViewConfigurationCompat;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -96,19 +99,37 @@ public class SlidingListView extends ListView {
 	 * */
 	
 	@Override
-	public boolean onInterceptTouchEvent(MotionEvent ev) {
+	public void setAdapter(ListAdapter adapter) {
+		// TODO Auto-generated method stubs
+		super.setAdapter(adapter);
+		if (adapter != null) {
+			touchListener.resetItems();
 		
-		if (scrollState == SCROLLING_X) {
-			touchListener.onTouch(this, ev);
+			adapter.registerDataSetObserver(new DataSetObserver() {
+				
+				public void onChanged() {
+					super.onChanged();
+					touchListener.resetItems();
+				};
+			});
+			showLog("set Adapter not null");
+		} else {
+			showLog("Adapter Not set NULL");
 		}
-		
+	}
+	
+	@Override
+	public boolean onInterceptTouchEvent(MotionEvent ev) {
 		switch (ev.getActionMasked()) {
 			case MotionEvent.ACTION_DOWN:
-				
 				return true;
 			default:
 				break;
 		}
 		return super.onInterceptTouchEvent(ev);
+	}
+	
+	private void showLog(String msg) {
+		Log.d("List View", msg);
 	}
 }
