@@ -4,11 +4,11 @@
     android:layout_height="wrap_content" >
     
     <LinearLayout 
-        android:id="@+id/swipelist_backrl"
+        android:id="@+id/slidelist_backview"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignTop="@+id/swipelist_frontrl"
-        android:layout_alignBottom="@+id/swipelist_frontrl"
+        android:layout_alignTop="@+id/slidelist_frontview"
+        android:layout_alignBottom="@+id/slidelist_frontview"
         android:layout_centerVertical="true"
         android:orientation="horizontal"
         android:background="#00ff00" >
@@ -36,7 +36,7 @@
     </LinearLayout>
     
 	<RelativeLayout 
-	    android:id="@+id/swipelist_frontrl"
+	    android:id="@+id/slidelist_frontview"
 	    android:layout_width="fill_parent"
 	    android:layout_height="wrap_content"
 	    android:background="#FFF"

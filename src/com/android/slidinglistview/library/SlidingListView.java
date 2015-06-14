@@ -16,6 +16,9 @@ public class SlidingListView extends ListView {
 	int slideFrontView, slideBackView;
 	boolean openSlidingWhenLongPressed, closeAllItemsOnListScroll;
 	
+	private static final int SCROLLING_X = 1;
+	private static final int SCROLLING_Y = 2;
+	private int scrollState;
     public final static String SLIDE_DEFAULT_FRONT_VIEW = "slidelist_frontview";
 
     public final static String SLIDE_DEFAULT_BACK_VIEW = "slidelist_backview";
@@ -85,18 +88,26 @@ public class SlidingListView extends ListView {
         }
         touchListener = new SlidingListViewTouchListener(this, slideFrontView, slideBackView);
         setOnTouchListener(touchListener);
+        setOnScrollListener(touchListener.createScrollListener());
 	}
+	/*
+	 * abc_screen_toolbar
+	 * android:touchscreenBlocksFocus="true"
+	 * */
 	
 	@Override
 	public boolean onInterceptTouchEvent(MotionEvent ev) {
 		
+		if (scrollState == SCROLLING_X) {
+			touchListener.onTouch(this, ev);
+		}
+		
 		switch (ev.getActionMasked()) {
-		case MotionEvent.ACTION_DOWN:
-			
-			break;
-
-		default:
-			break;
+			case MotionEvent.ACTION_DOWN:
+				
+				return true;
+			default:
+				break;
 		}
 		return super.onInterceptTouchEvent(ev);
 	}
