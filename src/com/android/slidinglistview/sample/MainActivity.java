@@ -50,7 +50,6 @@ public class MainActivity extends ActionBarActivity {
 			}
 			viewHolder = (ViewHolder) convertView.getTag();
 			viewHolder.front_textview.setText(position + " Front Text View");
-			
 			return convertView;
 		}
 		

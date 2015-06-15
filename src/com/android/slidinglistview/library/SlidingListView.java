@@ -16,9 +16,9 @@ public class SlidingListView extends ListView {
 	int slideFrontView, slideBackView;
 	boolean openSlidingWhenLongPressed, closeAllItemsOnListScroll;
 	
-    public final static String SLIDE_DEFAULT_FRONT_VIEW = "slidelist_frontview";
+    public final static String SLIDE_DEFAULT_FRONT_VIEW = "swipelist_frontrl";
 
-    public final static String SLIDE_DEFAULT_BACK_VIEW = "slidelist_backview";
+    public final static String SLIDE_DEFAULT_BACK_VIEW = "swipelist_backrl";
     SlidingListViewTouchListener touchListener = null;
 	
 	public SlidingListView(Context context, AttributeSet attrs) {
@@ -87,14 +87,22 @@ public class SlidingListView extends ListView {
         setOnTouchListener(touchListener);
 	}
 	
+	private void showToast(String msg) {
+		Toast.makeText(getContext().getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
+	}
+	
 	@Override
 	public boolean onInterceptTouchEvent(MotionEvent ev) {
 		
 		switch (ev.getActionMasked()) {
 		case MotionEvent.ACTION_DOWN:
-			
+			showToast("ACTION DOWN");
+			super.onInterceptTouchEvent(ev);
+			touchListener.onTouch(this, ev);
 			break;
-
+		case MotionEvent.ACTION_UP:
+			showToast("ACTION UP");
+			break;
 		default:
 			break;
 		}
