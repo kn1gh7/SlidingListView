@@ -4,11 +4,14 @@ import com.android.slidinglistview.sample.R;
 
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.database.DataSetObserver;
 import android.support.v4.view.ViewConfigurationCompat;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -16,7 +19,10 @@ public class SlidingListView extends ListView {
 	int slideFrontView, slideBackView;
 	boolean openSlidingWhenLongPressed, closeAllItemsOnListScroll;
 	
-    public final static String SLIDE_DEFAULT_FRONT_VIEW = "swipelist_frontrl";
+	private static final int SCROLLING_X = 1;
+	private static final int SCROLLING_Y = 2;
+	private int scrollState;
+    public final static String SLIDE_DEFAULT_FRONT_VIEW = "slidelist_frontview";
 
     public final static String SLIDE_DEFAULT_BACK_VIEW = "swipelist_backrl";
     SlidingListViewTouchListener touchListener = null;
@@ -85,27 +91,49 @@ public class SlidingListView extends ListView {
         }
         touchListener = new SlidingListViewTouchListener(this, slideFrontView, slideBackView);
         setOnTouchListener(touchListener);
+        setOnScrollListener(touchListener.createScrollListener());
 	}
+	/*
+	 * abc_screen_toolbar
+	 * android:touchscreenBlocksFocus="true"
+	 * */
 	
 	private void showToast(String msg) {
 		Toast.makeText(getContext().getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
 	}
 	
 	@Override
-	public boolean onInterceptTouchEvent(MotionEvent ev) {
+	public void setAdapter(ListAdapter adapter) {
+		// TODO Auto-generated method stubs
+		super.setAdapter(adapter);
+		if (adapter != null) {
+			touchListener.resetItems();
 		
+			adapter.registerDataSetObserver(new DataSetObserver() {
+				
+				public void onChanged() {
+					super.onChanged();
+					touchListener.resetItems();
+				};
+			});
+			showLog("set Adapter not null");
+		} else {
+			showLog("Adapter Not set NULL");
+		}
+	}
+	
+	@Override
+	public boolean onInterceptTouchEvent(MotionEvent ev) {
 		switch (ev.getActionMasked()) {
-		case MotionEvent.ACTION_DOWN:
-			showToast("ACTION DOWN");
-			super.onInterceptTouchEvent(ev);
-			touchListener.onTouch(this, ev);
-			break;
-		case MotionEvent.ACTION_UP:
-			showToast("ACTION UP");
-			break;
-		default:
-			break;
+			case MotionEvent.ACTION_DOWN:
+				return true;
+			default:
+				break;
 		}
 		return super.onInterceptTouchEvent(ev);
+	}
+	
+	private void showLog(String msg) {
+		Log.d("List View", msg);
 	}
 }
