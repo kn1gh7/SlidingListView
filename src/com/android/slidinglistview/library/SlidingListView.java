@@ -19,14 +19,19 @@ public class SlidingListView extends ListView {
 	int slideFrontView, slideBackView;
 	boolean openSlidingWhenLongPressed, closeAllItemsOnListScroll;
 	
+	private static final int NO_SCROLLING = -1;
 	private static final int SCROLLING_X = 1;
 	private static final int SCROLLING_Y = 2;
 	private int scrollState;
     public final static String SLIDE_DEFAULT_FRONT_VIEW = "slidelist_frontview";
 
-    public final static String SLIDE_DEFAULT_BACK_VIEW = "swipelist_backrl";
+    public final static String SLIDE_DEFAULT_BACK_VIEW = "slidelist_backview";
     SlidingListViewTouchListener touchListener = null;
-	
+    
+    private float lastX, lastY;
+    
+    private int touchSlop;
+    
 	public SlidingListView(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		init(attrs);
@@ -42,38 +47,6 @@ public class SlidingListView extends ListView {
 	private void init(AttributeSet attrs) {
         openSlidingWhenLongPressed = true;
         closeAllItemsOnListScroll = true;
-        
-        /*
-         * <resources>
-		    <declare-styleable name="SwipeListView">
-		        <attr name="swipeOpenOnLongPress" format="boolean"/>
-		        <attr name="swipeAnimationTime" format="integer"/>
-		        <attr name="swipeOffsetLeft" format="dimension"/>
-		        <attr name="swipeOffsetRight" format="dimension"/>
-		        <attr name="swipeCloseAllItemsWhenMoveList" format="boolean"/>
-		        <attr name="swipeFrontView" format="reference"/>
-		        <attr name="swipeBackView" format="reference"/>
-		        <attr name="swipeMode" format="enum">
-		            <enum name="none" value="0"/>
-		            <enum name="both" value="1"/>
-		            <enum name="right" value="2"/>
-		            <enum name="left" value="3"/>
-		        </attr>
-		        <attr name="swipeActionLeft" format="enum">
-		            <enum name="reveal" value="0"/>
-		            <enum name="dismiss" value="1"/>
-		            <enum name="choice" value="2"/>
-		        </attr>
-		        <attr name="swipeActionRight" format="enum">
-		            <enum name="reveal" value="0"/>
-		            <enum name="dismiss" value="1"/>
-		            <enum name="choice" value="2"/>
-		        </attr>
-		        <attr name="swipeDrawableChecked" format="reference"/>
-		        <attr name="swipeDrawableUnchecked" format="reference"/>
-		    </declare-styleable>
-		</resources>
-         * */
         
         if (attrs != null) {
         	TypedArray styled = getContext().obtainStyledAttributes(attrs, R.styleable.SlidingListView);
@@ -124,14 +97,49 @@ public class SlidingListView extends ListView {
 	
 	@Override
 	public boolean onInterceptTouchEvent(MotionEvent ev) {
+		
+		if (scrollState == SCROLLING_X) {
+			return touchListener.onTouch(this, ev);
+		}
+		
 		switch (ev.getActionMasked()) {
+			
 			case MotionEvent.ACTION_DOWN:
-				return true;
+				super.onInterceptTouchEvent(ev);
+				touchListener.onTouch(this, ev);
+				lastX = ev.getRawX();
+				lastY = ev.getRawY();
+				scrollState = NO_SCROLLING;
+				return false;
+			case MotionEvent.ACTION_MOVE:
+				checkInMoving(ev.getRawX(), ev.getRawY());
+				return scrollState == SCROLLING_Y;
+			case MotionEvent.ACTION_UP:
+				touchListener.onTouch(this, ev);
+                return scrollState == SCROLLING_Y;
 			default:
+				scrollState = NO_SCROLLING;
 				break;
 		}
 		return super.onInterceptTouchEvent(ev);
 	}
+	
+	private void checkInMoving(float x, float y) {
+        final int xDiff = (int) Math.abs(x - lastX);
+        final int yDiff = (int) Math.abs(y - lastY);
+
+        final int touchSlop = this.touchSlop;
+        boolean xMoved = xDiff > touchSlop;
+        boolean yMoved = yDiff > touchSlop;
+
+        if (xMoved) {
+            scrollState = SCROLLING_X;
+        }
+
+        if (yMoved) {
+            scrollState = SCROLLING_Y;
+        }
+    }
 	
 	private void showLog(String msg) {
 		Log.d("List View", msg);

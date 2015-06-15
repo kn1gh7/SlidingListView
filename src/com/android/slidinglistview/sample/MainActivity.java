@@ -14,6 +14,7 @@ import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.slidinglistview.library.SlidingListView;
 
@@ -51,14 +52,31 @@ public class MainActivity extends ActionBarActivity {
 				convertView.setTag(viewHolder);
 			}
 			viewHolder = (ViewHolder) convertView.getTag();
-			viewHolder.front_textview.setText(position + " Front Text View");
-			
-			viewHolder.slidelist_backview.setOnClickListener(new OnClickListener() {
+			viewHolder.front_textView.setText(position + " Front Text View");
+			viewHolder.back_textView.setOnClickListener(new OnClickListener() {
 				
 				@Override
 				public void onClick(View v) {
 					// TODO Auto-generated method stub
-					showLog("backView");
+					showLog("Back TextView");
+				}
+			});
+			
+			viewHolder.view_profile.setOnClickListener(new OnClickListener() {
+				
+				@Override
+				public void onClick(View v) {
+					// TODO Auto-generated method stub
+					showLog("View Profile");
+				}
+			});
+			
+			viewHolder.block.setOnClickListener(new OnClickListener() {
+				
+				@Override
+				public void onClick(View v) {
+					// TODO Auto-generated method stub
+					showLog("Block");
 				}
 			});
 			return convertView;
@@ -68,6 +86,10 @@ public class MainActivity extends ActionBarActivity {
 		public int getCount() {
 			return 10;
 		}
+	}
+	
+	private void showToast(String msg) {
+		Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
 	}
 	
 	private void showLog(String msg) {
@@ -81,12 +103,15 @@ public class MainActivity extends ActionBarActivity {
 	private class ViewHolder {
 		public LinearLayout slidelist_backview;
 		public RelativeLayout slidelist_frontview;
-		public TextView front_textview;
+		public TextView front_textView, back_textView, view_profile, block;
 		
 		public ViewHolder(View convertView) {
 			slidelist_backview = (LinearLayout) convertView.findViewById(R.id.slidelist_backview);
 			slidelist_frontview = (RelativeLayout) convertView.findViewById(R.id.slidelist_frontview);
-			front_textview = (TextView) convertView.findViewById(R.id.front_textview);
+			front_textView = (TextView) convertView.findViewById(R.id.front_textview);
+			back_textView = (TextView) convertView.findViewById(R.id.back_textView);
+			view_profile = (TextView) convertView.findViewById(R.id.view_profile);
+			block = (TextView) convertView.findViewById(R.id.block);
 		}
 	}
 }
