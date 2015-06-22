@@ -141,6 +141,10 @@ public class SlidingListView extends ListView {
         }
     }
 	
+	public void resetScroll() {
+		scrollState = NO_SCROLLING;
+	}
+	
 	private void showLog(String msg) {
 		Log.d("List View", msg);
 	}

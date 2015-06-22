@@ -122,6 +122,7 @@ public class SlidingListViewTouchListener implements OnTouchListener {
 					slideOpen(downPosition);
 					downX = 0;
 					downPosition = INVALID_POSITION;
+					slidingListView.resetScroll();
 				}
 				return true;
 			} else if (moveX < 0 && Math.abs(moveX) > slop && downPosition != INVALID_POSITION) {
@@ -132,6 +133,13 @@ public class SlidingListViewTouchListener implements OnTouchListener {
 					downPosition = INVALID_POSITION;
 				}
 				return true;
+			} else {
+				int startPosition = slidingListView.getFirstVisiblePosition();
+				setParentView(slidingListView.getChildAt(downPosition-startPosition));
+				setFrontView(slidingListView.getChildAt(downPosition-startPosition).findViewById(frontViewId));
+				setBackView(slidingListView.getChildAt(downPosition-startPosition).findViewById(backViewId));
+				
+				backView.dispatchTouchEvent(event);
 			}
 			v.onTouchEvent(event);
 			break;
@@ -211,6 +219,10 @@ public class SlidingListViewTouchListener implements OnTouchListener {
 		tAnim.setDuration(150);
 		frontView.startAnimation(tAnim);
 		opened.set(downPosition, true);
+		
+		if (slidingListView != null)
+			slidingListView.resetScroll();
+		
 		/*backView.setClickable(true);
 		frontView.setClickable(false);*/
 	}
@@ -293,7 +305,10 @@ public class SlidingListViewTouchListener implements OnTouchListener {
 					closeAllOpenItems();
 					isListMoving = true;
 				} else {
+					showLog("Scroll State None Relevant");
 					isListMoving = false;
+					if (slidingListView != null)
+						slidingListView.resetScroll();
 				}
 			}
 			
