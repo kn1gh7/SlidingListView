@@ -22,7 +22,7 @@ public class SlidingListView extends ListView {
 	private static final int NO_SCROLLING = -1;
 	private static final int SCROLLING_X = 1;
 	private static final int SCROLLING_Y = 2;
-	private int scrollState;
+	private int scrollState = NO_SCROLLING;
     public final static String SLIDE_DEFAULT_FRONT_VIEW = "slidelist_frontview";
 
     public final static String SLIDE_DEFAULT_BACK_VIEW = "slidelist_backview";
@@ -75,6 +75,15 @@ public class SlidingListView extends ListView {
 		Toast.makeText(getContext().getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
 	}
 	
+	public boolean isViewOpen(int positionInAdapter) {
+		return touchListener.isItemOpen(positionInAdapter);
+	}
+	
+	public void resetScrollState() {
+		showLog("Scroll State Reset Done");
+		scrollState = NO_SCROLLING;
+	}
+	
 	@Override
 	public void setAdapter(ListAdapter adapter) {
 		// TODO Auto-generated method stubs
@@ -105,8 +114,12 @@ public class SlidingListView extends ListView {
 		switch (ev.getActionMasked()) {
 			
 			case MotionEvent.ACTION_DOWN:
+				showLog("ACTION DOWN Before onInterceptTouchEvent");
 				super.onInterceptTouchEvent(ev);
+				showLog("ACTION DOWN After onInterceptTouchEvent");
+				showLog("ACTION DOWN Before onTouch");
 				touchListener.onTouch(this, ev);
+				showLog("ACTION DOWN After onTouch");
 				lastX = ev.getRawX();
 				lastY = ev.getRawY();
 				scrollState = NO_SCROLLING;
@@ -115,7 +128,9 @@ public class SlidingListView extends ListView {
 				checkInMoving(ev.getRawX(), ev.getRawY());
 				return scrollState == SCROLLING_Y;
 			case MotionEvent.ACTION_UP:
+				showLog("ACTION UP Before onTouch");
 				touchListener.onTouch(this, ev);
+				showLog("ACTION UP After onTouch");
                 return scrollState == SCROLLING_Y;
 			default:
 				scrollState = NO_SCROLLING;

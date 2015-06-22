@@ -21,12 +21,15 @@ public class SlidingListViewTouchListener implements OnTouchListener {
 	View frontView, backView, parentView;
 	SlidingListView slidingListView;
 	int slop;
-	float downX;
-	MotionEvent downEvent;
+	float downX, downY;
 	ArrayList<Boolean> opened;
 	boolean isListMoving = false;
 	private static int INVALID_POSITION = -1;
-	int downPosition;
+	
+	/*
+	 * Position of the item opened in Adapters dataset
+	 * */
+	int downPosition = INVALID_POSITION;
 	
 	public SlidingListViewTouchListener(SlidingListView slidingListView, int frontViewId, int backViewId) {
 		this.slidingListView = slidingListView;
@@ -71,13 +74,13 @@ public class SlidingListViewTouchListener implements OnTouchListener {
 				return false;
 			
 			downX = event.getRawX();
-			downEvent = event;
+			downY = event.getRawY();
 			showLog("ACTION_DOWN " + downX);
 			int childCount = slidingListView.getChildCount();
             int[] listViewCoords = new int[2];
             slidingListView.getLocationOnScreen(listViewCoords);
-            int x = (int) downEvent.getRawX() - listViewCoords[0];
-            int y = (int) downEvent.getRawY() - listViewCoords[1];
+            int x = (int) downX - listViewCoords[0];
+            int y = (int) downY - listViewCoords[1];
             View child;
             for (int i = 0; i < childCount; i++) {
                 child = slidingListView.getChildAt(i);
@@ -87,14 +90,17 @@ public class SlidingListViewTouchListener implements OnTouchListener {
                 int childPosition = slidingListView.getPositionForView(child);
                 boolean allowSlide = slidingListView.getAdapter().isEnabled(childPosition) && slidingListView.getAdapter().getItemViewType(childPosition) >= 0; 
                 if (allowSlide && rect.contains(x, y)) {
-                	showLog("i: " + i + " downPosition: " + downPosition + " newDown: " + childPosition + " opened?:" + opened.get(childPosition));
+                	showLog("i: " + i + " downPosition: " + downPosition + " newDown: " + childPosition + " opened?:" + opened.get(childPosition) + "i == newDown" + (i == childPosition) );
                 	downPosition = childPosition;
-                	setParentView(child);
-                	setFrontView(child.findViewById(frontViewId));
-                	setBackView(child.findViewById(backViewId));
+                	setCurrentViewForPosition(downPosition);
                 	
                 	frontView.setClickable(!opened.get(downPosition));
                 	frontView.setLongClickable(!opened.get(downPosition));
+                	
+                	if (opened.get(downPosition)) {
+                		backView.dispatchTouchEvent(event);
+                	}
+                	break;
                 }
             }
             v.onTouchEvent(event);
@@ -106,16 +112,21 @@ public class SlidingListViewTouchListener implements OnTouchListener {
 			int moveX = (int) (downX - currentX);
 			if (moveX > 0 && moveX > slop && downPosition != INVALID_POSITION) {
 				if (!opened.get(downPosition)) {
+					showLog("Positive Request Disallow");
 					slidingListView.requestDisallowInterceptTouchEvent(true);
 					//slideOpen(downPosition);
 				}
 				return true;
 			} else if (moveX < 0 && Math.abs(moveX) > slop && downPosition != INVALID_POSITION) {
 				if (opened.get(downPosition)) {
+					showLog("Negative Request Disallow");
 					slidingListView.requestDisallowInterceptTouchEvent(true);
 					//slideClose(downPosition);
 				}
 				return true;
+			} else {
+				showLog("Cancel Disallow");
+				slidingListView.requestDisallowInterceptTouchEvent(false);
 			}
 			break;
 		case MotionEvent.ACTION_UP:
@@ -148,6 +159,8 @@ public class SlidingListViewTouchListener implements OnTouchListener {
 				setBackView(slidingListView.getChildAt(downPosition-startPosition).findViewById(backViewId));
 				
 				backView.dispatchTouchEvent(event);
+				if (slidingListView != null)
+					slidingListView.resetScroll();
 			}
 			v.onTouchEvent(event);
 			break;
@@ -157,11 +170,24 @@ public class SlidingListViewTouchListener implements OnTouchListener {
 		return false;
 	}
 	
+	public boolean isItemOpen(int positionInAdapter) {
+		return opened.get(positionInAdapter);
+	}
+	
+	private void setCurrentViewForPosition(int downPosition) {
+		int positionInAdapter = downPosition - slidingListView.getFirstVisiblePosition();
+		View child = slidingListView.getChildAt(positionInAdapter);
+		setParentView(child);
+    	setFrontView(child.findViewById(frontViewId));
+    	setBackView(child.findViewById(backViewId));
+	}
+	
 	public void resetItems() {
 		if (slidingListView != null && slidingListView.getAdapter() != null) {
 			int count = slidingListView.getAdapter().getCount();
 			opened = new ArrayList<Boolean>();
 			showLog(count + "");
+			slidingListView.resetScrollState();
 			for (int i=0; i<count; i++) {
 				opened.add(false);
 			}
@@ -308,7 +334,7 @@ public class SlidingListViewTouchListener implements OnTouchListener {
 			@Override
 			public void onScrollStateChanged(AbsListView view, int scrollState) {
 				// TODO Auto-generated method stub
-				if (scrollState == AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL || scrollState == AbsListView.OnScrollListener.SCROLL_STATE_FLING) {
+				if (scrollState == AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL) {
 					showLog("Scrolling state changed");
 					closeAllOpenItems();
 					isListMoving = true;

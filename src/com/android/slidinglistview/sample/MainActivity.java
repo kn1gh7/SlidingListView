@@ -10,6 +10,8 @@ import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -31,6 +33,22 @@ public class MainActivity extends ActionBarActivity {
 		ArrayList<DataModel> data = new ArrayList<MainActivity.DataModel>();
 		MyAdapter adapter = new MyAdapter(this, data);
 		listview.setAdapter(adapter);
+		
+		listview.setOnItemClickListener(new OnItemClickListener() {
+
+			@Override
+			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
+					long arg3) {
+				// TODO Auto-generated method stub
+				showLog("Position: " + arg2);
+				if (listview.isViewOpen(arg2)) {
+					showToast("View Already open");
+				} else {
+					showToast("View is close");
+				}
+			}
+			
+		});
 	}
 	
 	private class MyAdapter extends ArrayAdapter<DataModel> {
