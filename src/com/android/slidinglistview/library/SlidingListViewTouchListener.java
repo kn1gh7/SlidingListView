@@ -6,14 +6,13 @@ import android.content.Context;
 import android.graphics.Rect;
 import android.util.Log;
 import android.view.MotionEvent;
-import android.view.VelocityTracker;
 import android.view.View;
 import android.view.View.OnTouchListener;
 import android.view.ViewConfiguration;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.TranslateAnimation;
 import android.widget.AbsListView;
-import android.widget.ListView;
+import android.widget.AbsListView.RecyclerListener;
 
 
 public class SlidingListViewTouchListener implements OnTouchListener {
@@ -36,6 +35,15 @@ public class SlidingListViewTouchListener implements OnTouchListener {
 		ViewConfiguration vc = ViewConfiguration.get(slidingListView.getContext());
         slop = vc.getScaledTouchSlop();
         opened = new ArrayList<Boolean>();
+        
+        slidingListView.setRecyclerListener(new RecyclerListener() {
+			
+			@Override
+			public void onMovedToScrapHeap(View view) {
+				view.findViewById(SlidingListViewTouchListener.this.frontViewId).clearAnimation();
+				view.findViewById(SlidingListViewTouchListener.this.frontViewId).setClickable(true);
+			}
+		});
 	}
 	
 	private void showLog(String msg) {
