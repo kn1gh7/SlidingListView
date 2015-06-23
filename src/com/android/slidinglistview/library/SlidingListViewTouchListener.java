@@ -92,6 +92,10 @@ public class SlidingListViewTouchListener implements OnTouchListener {
                 if (allowSlide && rect.contains(x, y)) {
                 	showLog("i: " + i + " downPosition: " + downPosition + " newDown: " + childPosition + " opened?:" + opened.get(childPosition) + "i == newDown" + (i == childPosition) );
                 	downPosition = childPosition;
+                	
+                	if (slidingListView.closeOpenItemsOnTouchDown)
+                		closeOpenItemsExcept(downPosition);
+                	
                 	setCurrentViewForPosition(downPosition);
                 	
                 	frontView.setClickable(!opened.get(downPosition));
@@ -301,6 +305,22 @@ public class SlidingListViewTouchListener implements OnTouchListener {
 		int startPosition = slidingListView.getFirstVisiblePosition();
 		for (int i = 0; i< slidingListView.getAdapter().getCount(); i++) {
 			if (opened.get(i)) {
+				int itemPosInView = i-startPosition;
+				if (itemPosInView >=0 && slidingListView.getChildAt(itemPosInView) != null 
+						&& slidingListView.getChildAt(itemPosInView).findViewById(frontViewId) != null) {
+					setParentView(slidingListView.getChildAt(itemPosInView));
+					setFrontView(slidingListView.getChildAt(itemPosInView).findViewById(frontViewId));
+					setBackView(slidingListView.getChildAt(itemPosInView).findViewById(backViewId));
+					slideClose(i);
+				}
+			}
+		}
+	}
+	
+	private void closeOpenItemsExcept(int exceptPosition) {
+		int startPosition = slidingListView.getFirstVisiblePosition();
+		for (int i = 0; i< slidingListView.getAdapter().getCount(); i++) {
+			if (opened.get(i) && i != exceptPosition) {
 				int itemPosInView = i-startPosition;
 				if (itemPosInView >=0 && slidingListView.getChildAt(itemPosInView) != null 
 						&& slidingListView.getChildAt(itemPosInView).findViewById(frontViewId) != null) {

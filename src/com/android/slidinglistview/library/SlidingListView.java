@@ -17,7 +17,7 @@ import android.widget.Toast;
 
 public class SlidingListView extends ListView {
 	int slideFrontView, slideBackView;
-	boolean openSlidingWhenLongPressed, closeAllItemsOnListScroll;
+	boolean openSlidingWhenLongPressed, closeAllItemsOnListScroll, closeOpenItemsOnTouchDown = false;
 	
 	private static final int NO_SCROLLING = -1;
 	private static final int SCROLLING_X = 1;
@@ -47,11 +47,13 @@ public class SlidingListView extends ListView {
 	private void init(AttributeSet attrs) {
         openSlidingWhenLongPressed = true;
         closeAllItemsOnListScroll = true;
+        closeOpenItemsOnTouchDown = false;
         
         if (attrs != null) {
         	TypedArray styled = getContext().obtainStyledAttributes(attrs, R.styleable.SlidingListView);
         	slideFrontView = styled.getResourceId(R.styleable.SlidingListView_frontView, 0);
             slideBackView = styled.getResourceId(R.styleable.SlidingListView_backView, 0);
+            closeOpenItemsOnTouchDown = styled.getBoolean(R.styleable.SlidingListView_closeOpenItemsOnDown, false);
         }
         
         if (slideFrontView == 0 || slideBackView == 0) {

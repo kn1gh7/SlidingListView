@@ -76,6 +76,7 @@ public class MainActivity extends ActionBarActivity {
 				@Override
 				public void onClick(View v) {
 					// TODO Auto-generated method stub
+					showToast("Delete");
 					showLog("Back TextView");
 				}
 			});
@@ -85,6 +86,7 @@ public class MainActivity extends ActionBarActivity {
 				@Override
 				public void onClick(View v) {
 					// TODO Auto-generated method stub
+					showToast("View Profile");
 					showLog("View Profile");
 				}
 			});
@@ -94,6 +96,7 @@ public class MainActivity extends ActionBarActivity {
 				@Override
 				public void onClick(View v) {
 					// TODO Auto-generated method stub
+					showToast("Block");
 					showLog("Block");
 				}
 			});
